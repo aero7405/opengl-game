@@ -1,0 +1,7 @@
+# created just in case I decide to upload this to git to avoid a headache
+# specific directories
+.vscode/
+
+# build files
+*.o
+*.exe
