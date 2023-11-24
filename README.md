@@ -3,7 +3,7 @@ An experiment in building a game from the ground up in C using OpenGL (via GLFW 
 
 **Project Status:** In-development
 
-### Roadmap
+## Roadmap
  - [ ] Basic renderer
     - [x] Basic shapes
     - [ ] Textures
@@ -12,5 +12,5 @@ An experiment in building a game from the ground up in C using OpenGL (via GLFW 
 
 More to be added as scope expands.
 
-### Running (Windows)
+## Running (Windows)
 Compile with Make and run `Platformer.exe`
