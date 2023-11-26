@@ -11,14 +11,14 @@ typedef struct
     GLuint vao, vbo, ebo;
     /* number of elements in ebo */
     GLuint ebo_element_cnt;
-} Shape;
+} Sprite;
 
 void compile_shaders(void);
 
-void create_shape(Shape* shape, GLfloat verticies[], GLfloat sizeof_vertices, GLuint element_order[], GLuint sizeof_elements);
+void create_sprite(Sprite* sprite, GLfloat verticies[], GLfloat sizeof_vertices, GLuint element_order[], GLuint sizeof_elements);
 
-void draw_shape(Shape* shape);
+void draw_sprite(Sprite* sprite);
 
-void delete_shape_buffers(Shape* shape);
+void delete_sprite_buffers(Sprite* sprite);
 
 #endif /* DRAWING_H */

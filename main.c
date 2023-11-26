@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
-#include "drawing.h"
+#include "sprite.h"
 
 static void error_callback(int error, const char *description)
 {
@@ -14,23 +14,16 @@ static void error_callback(int error, const char *description)
 
 /* temp variables for testing drawing */
 GLfloat rect1_verts[] = {
-    -0.1f, -0.5f,
-    -0.4f, -0.5f,
-    -0.4f,  0.5f,
-    -0.1f,  0.5f
-};
-GLfloat rect2_verts[] = {
-     0.1f, -0.5f,
-     0.4f, -0.5f,
-     0.4f,  0.5f,
-     0.1f,  0.5f
+    -0.5f, -0.5f,  0.0f,  0.0f,
+     0.5f, -0.5f,  1.0f,  0.0f,
+     0.5f,  0.5f,  1.0f,  1.0f,
+    -0.5f,  0.5f,  0.0f,  1.0f
 };
 GLuint rect_el_order[] = {
     0, 1, 2,
     2, 3, 0
 };
-Shape rect1;
-Shape rect2;
+Sprite rect1;
 
 int main(void)
 {
@@ -58,16 +51,14 @@ int main(void)
 
     /* Creating shapes */
     compile_shaders();
-    create_shape(&rect1, rect1_verts, sizeof(rect1_verts), rect_el_order, sizeof(rect_el_order));
-    create_shape(&rect2, rect2_verts, sizeof(rect2_verts), rect_el_order, sizeof(rect_el_order));
+    create_sprite(&rect1, rect1_verts, sizeof(rect1_verts), rect_el_order, sizeof(rect_el_order));
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* Drawing */
-        draw_shape(&rect1);
-        draw_shape(&rect2);
+        draw_sprite(&rect1);
 
         /* Update frame */
         glfwSwapBuffers(window);
@@ -77,8 +68,7 @@ int main(void)
     }
 
     /* cleaning up */
-    delete_shape_buffers(&rect1);
-    delete_shape_buffers(&rect2);
+    delete_sprite_buffers(&rect1);
 
     glfwDestroyWindow(window);
     glfwTerminate();

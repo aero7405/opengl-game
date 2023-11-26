@@ -5,7 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <glad/gl.h>
 
-#include "drawing.h"
+#include "sprite.h"
+#include "texture.h"
 
 /** 
  * TODO:
@@ -20,16 +21,21 @@
 const GLchar default_vertex_shader_source[] =
     "#version 150 core\n"
     "in vec2 position;"
+    "in vec2 texture_coord;"
+    "out vec2 _texture_coord;"
     "void main()"
     "{"
+    "   _texture_coord = texture_coord;"
     "   gl_Position = vec4(position, 0.0, 1.0);"
     "}";
 const GLchar default_fragment_shader_source[] =
     "#version 150 core\n"
+    "in vec2 _texture_coord;"
     "out vec4 out_colour;"
+    "uniform sampler2D in_texture;"
     "void main()"
     "{"
-    "   out_colour = vec4(1.0, 1.0, 1.0, 1.0);"
+    "   out_colour = texture(in_texture, _texture_coord);"
     "}";
 const GLchar* vertex_shader_source_ptr = default_vertex_shader_source;
 const GLchar* fragment_shader_source_ptr = default_fragment_shader_source;
@@ -73,23 +79,46 @@ void compile_shaders(void)
     }
 }
 
-void create_shape(Shape* shape, GLfloat verticies[], GLfloat sizeof_vertices, GLuint element_order[], GLuint sizeof_elements)
+void create_sprite(Sprite* sprite, GLfloat verticies[], GLfloat sizeof_vertices, GLuint element_order[], GLuint sizeof_elements)
 {
     GLuint shader_program;
-    GLuint position_attrib;
+    GLuint position_attrib, texture_attrib;
+
+
+    /* todo: importing textures */
+    
+
+    GLuint texture;
+    float pixels[] = { /* black and white checkerboard */
+        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
+    };
+
+    /* binding textures */
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    /* setting wrapping settings for texture */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    /* setting filter for texture */
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    /* binding texture */
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+
 
     /* calculating number of elements in array */
-    shape->ebo_element_cnt = sizeof_elements / sizeof(GLuint);
+    sprite->ebo_element_cnt = sizeof_elements / sizeof(GLuint);
     /* creating vertex array object */
-    glGenVertexArrays(1, &(shape->vao)); 
-    glBindVertexArray(shape->vao); 
+    glGenVertexArrays(1, &(sprite->vao)); 
+    glBindVertexArray(sprite->vao); 
     /* creating vertex buffer object */
-    glGenBuffers(1, &(shape->vbo));
-    glBindBuffer(GL_ARRAY_BUFFER, shape->vbo);
+    glGenBuffers(1, &(sprite->vbo));
+    glBindBuffer(GL_ARRAY_BUFFER, sprite->vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof_vertices, verticies, GL_STATIC_DRAW);
     /* creating element buffer object */
-    glGenBuffers(1, &(shape->ebo));
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shape->ebo);
+    glGenBuffers(1, &(sprite->ebo));
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sprite->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof_elements, element_order, GL_STATIC_DRAW);
 
     /* NOTE, I'm sure there is a way to use a single shader program and render many shapes but I aren't clever enough to do that */
@@ -108,23 +137,26 @@ void create_shape(Shape* shape, GLfloat verticies[], GLfloat sizeof_vertices, GL
     glUseProgram(shader_program); 
     /* linking vertex data and attributes */
     position_attrib = glGetAttribLocation(shader_program, "position"); 
-    glVertexAttribPointer(position_attrib, 2, GL_FLOAT, GL_FALSE, 0, 0); 
+    glVertexAttribPointer(position_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), 0); 
     glEnableVertexAttribArray(position_attrib); 
+    texture_attrib = glGetAttribLocation(shader_program, "texture_coord"); 
+    glVertexAttribPointer(texture_attrib, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void *)(2 * sizeof(GLfloat))); 
+    glEnableVertexAttribArray(texture_attrib); 
 }
 
-void draw_shape(Shape* shape)
+void draw_sprite(Sprite* sprite)
 {
     /* binding buffers */
-    glBindVertexArray(shape->vao); 
-    glBindBuffer(GL_ARRAY_BUFFER, shape->vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, shape->ebo);
+    glBindVertexArray(sprite->vao); 
+    glBindBuffer(GL_ARRAY_BUFFER, sprite->vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sprite->ebo);
     /* drawing */
-    glDrawElements(GL_TRIANGLES, shape->ebo_element_cnt, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, sprite->ebo_element_cnt, GL_UNSIGNED_INT, 0);
 }
 
-void delete_shape_buffers(Shape* shape)
+void delete_sprite_buffers(Sprite* sprite)
 {
-    glDeleteBuffers(1, &(shape->ebo));
-    glDeleteBuffers(1, &(shape->vbo));
-    glDeleteVertexArrays(1, &(shape->vao));
+    glDeleteBuffers(1, &(sprite->ebo));
+    glDeleteBuffers(1, &(sprite->vbo));
+    glDeleteVertexArrays(1, &(sprite->vao));
 }
