@@ -6,7 +6,7 @@ FLAGS := -Wall -Wextra -pedantic -ansi -Werror -g
 LIBS := libs/libglfw3.a -lopengl32 -lgdi32
 INCLUDE := -Iinclude
 
-SRC := main.o sprite.o texture.o
+SRC := main.o sprite.o image.o
 DEPS := gl.o
 
 TARGET := Platformer

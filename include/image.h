@@ -1,13 +1,14 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef IMAGE_H
+#define IMAGE_H
 
 /* Expected usage:
 
     char *image = NULL;
+    int image_length;
     int width, height;
     float *pixel_buff = NULL;
     ....
-    image = load_file("resources/idle.bmp");
+    image_length = load_file("resources/idle.bmp", &image);
     pixel_buff = read_image(image, IMAGE_BITMAP, &width, &height); 
     ....
     delete image;
@@ -18,8 +19,6 @@
 /* image types supported */
 #define IMAGE_BITMAP 0
 
-char *load_file(const char *filename);
+float *read_image(const char *filename, int image_type, int *width_ptr, int *height_ptr);
 
-float *read_image(char *image, int image_type, int *width_ptr, int *height_ptr);
-
-#endif /* TEXTURE_H */
+#endif /* IMAGE_H */

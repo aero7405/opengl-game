@@ -6,7 +6,7 @@
 #include <glad/gl.h>
 
 #include "sprite.h"
-#include "texture.h"
+#include "image.h"
 
 /** 
  * TODO:
@@ -85,14 +85,14 @@ void create_sprite(Sprite* sprite, GLfloat verticies[], GLfloat sizeof_vertices,
     GLuint position_attrib, texture_attrib;
 
 
-    /* todo: importing textures */
-    
 
     GLuint texture;
-    float pixels[] = { /* black and white checkerboard */
-        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
-    };
+
+    int width, height;
+    float *pixels = NULL;
+
+    /* importing textures */
+    pixels = read_image("resources\\idle1.bmp", IMAGE_BITMAP, &width, &height);
 
     /* binding textures */
     glGenTextures(1, &texture);
@@ -104,7 +104,8 @@ void create_sprite(Sprite* sprite, GLfloat verticies[], GLfloat sizeof_vertices,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     /* binding texture */
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_FLOAT, pixels);
+
 
 
     /* calculating number of elements in array */
